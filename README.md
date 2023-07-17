@@ -38,18 +38,6 @@ python src/train.py trainer=cpu
 python src/train.py trainer=gpu
 ```
 
-Train model with chosen experiment configuration from [configs/experiment/](configs/experiment/)
-
-```bash
-python src/train.py experiment=experiment_name.yaml
-```
-
-You can override any parameter from command line like this
-
-```bash
-python src/train.py trainer.max_epochs=20 data.batch_size=64
-```
-
 
 ## TOLIST 
 ** add fewshot learning dataset*
