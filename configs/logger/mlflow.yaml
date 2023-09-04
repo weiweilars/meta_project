@@ -2,11 +2,11 @@
 
 mlflow:
   _target_: lightning.pytorch.loggers.mlflow.MLFlowLogger
-  experiment_name: "mnist_test"
+  # experiment_name: ""
   # run_name: ""
   tracking_uri: databricks # run `mlflow ui` command inside the `logs/mlflow/` dir to open the UI
   tags: null
   # save_dir: "./mlruns"
   prefix: ""
-  #artifact_location: null
+  artifact_location: null
   # run_id: ""

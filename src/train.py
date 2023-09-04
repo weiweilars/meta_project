@@ -53,11 +53,31 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     log.info(f"Instantiating model <{cfg.model._target_}>")
     model: LightningModule = hydra.utils.instantiate(cfg.model)
 
-    log.info("Instantiating callbacks...")
-    callbacks: List[Callback] = utils.instantiate_callbacks(cfg.get("callbacks"))
+    # log.info("Instantiating callbacks...")
+    # callbacks: List[Callback] = utils.instantiate_callbacks(cfg.get("callbacks"))
 
-    log.info("Instantiating loggers...")
-    logger: List[Logger] = utils.instantiate_loggers(cfg.get("logger"))
+    # log.info("Instantiating loggers...")
+    # logger: List[Logger] = utils.instantiate_loggers(cfg.get("logger"))
+
+    # setup callbacks
+    callbacks: List[Callback] = []
+    if 'callbacks' in cfg:
+        for _, cb_conf in cfg['callbacks'].items():
+            if '_target_' in cb_conf:
+                log.info(f'Instantiating callback <{cb_conf._target_}>')
+                callbacks.append(hydra.utils.instantiate(cb_conf))
+
+    # setup logger
+    logger: List[Logger] = []
+    if 'logger' in cfg:
+        for _, lg_conf in cfg['logger'].items():
+            if '_target_' in lg_conf:
+                log.info(f'Instantiating logger <{lg_conf._target_}>')
+                pl_logger = hydra.utils.instantiate(lg_conf)
+                logger.append(pl_logger)
+            if lg_conf['_target_'] == 'pytorch_lightning.loggers.MLFlowLogger':
+                mlf_logger = pl_logger
+
 
     log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
     trainer: Trainer = hydra.utils.instantiate(cfg.trainer, callbacks=callbacks, logger=logger)
@@ -75,9 +95,12 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         log.info("Logging hyperparameters!")
         utils.log_hyperparameters(object_dict)
 
+    mlf_logger.experiment.log_param(
+        mlf_logger._run_id, "ml-flow/run_id", mlf_logger._run_id)
+
     if cfg.get("train"):
         log.info("Starting training!")
-        trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
+        trainer.fit(model=model, datamodule=datamodule)#, ckpt_path=cfg.get("ckpt_path"))
 
     train_metrics = trainer.callback_metrics
 
