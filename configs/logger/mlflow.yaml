@@ -2,7 +2,7 @@
 
 mlflow:
   _target_: lightning.pytorch.loggers.mlflow.MLFlowLogger
-  experiment_name: "ikea_test"
+  #experiment_name: "ikea_test"
   # run_name: ""
   tracking_uri: databricks # run `mlflow ui` command inside the `logs/mlflow/` dir to open the UI
   tags: null
