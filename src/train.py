@@ -2,7 +2,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import hydra
 import lightning as L
-import rootutils
 import pyrootutils
 import torch
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
